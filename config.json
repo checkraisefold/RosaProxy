@@ -1,0 +1,6 @@
+{
+    "logger": {
+        "logLevel": "debug",
+        "logColor": true
+    }
+}
