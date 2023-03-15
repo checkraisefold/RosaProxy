@@ -1,9 +1,0 @@
-{
-    "Lua.workspace.library": [
-        "C:\\Users\\Administrator\\Desktop\\fortnite hack folder\\luvit\\lspLib\\deps",
-        "${3rd}/luv/library"
-    ],
-    "Lua.diagnostics.disable": [
-        "different-requires"
-    ]
-}
