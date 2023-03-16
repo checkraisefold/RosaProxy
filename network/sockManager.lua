@@ -5,6 +5,7 @@ local logger = require("../misc/logger")
 ---@field port number
 ---@field name string
 ---@field socket table?
+local ManagedSocket = {}
 
 ---@class SockManager
 ---@field private _sockets table<number, ManagedSocket>
@@ -41,12 +42,16 @@ function SockManager:create(name, port, host, onMsg)
 		port = normalizedPort,
 		socket = sockObject,
 	}
-	setmetatable(managedSock, { __index = sockObject })
+	setmetatable(managedSock, {
+		__index = function(_, k)
+			return rawget(sockObject, k) or rawget(ManagedSocket, k)
+		end,
+	})
 	self._sockets[normalizedPort] = managedSock
 
-    if onMsg then
-        sockObject:on("message", onMsg)
-    end
+	if onMsg then
+		sockObject:on("message", onMsg)
+	end
 
 	logger:debug("SockManager", "Created UDP socket:", name, normalizedPort)
 	return managedSock
@@ -63,6 +68,34 @@ function SockManager:get(identifier)
 			return v
 		end
 	end
+end
+
+-- This shouldn't be used directly by external code. Use :destroyManaged() on a socket instead.
+---@param identifier number|string
+---@param value table?
+function SockManager:internalSet(identifier, value)
+	if type(identifier) == "number" then
+		self._sockets[identifier] = nil
+		return true
+	end
+
+	for i, v in pairs(self._sockets) do
+		if v.name == identifier then
+			self._sockets[i] = value
+			return true
+		end
+	end
+
+	return false
+end
+
+-- Destroys a ManagedSocket.
+function ManagedSocket:destroyManaged()
+	self.socket:close()
+	SockManager:internalSet(self.port, nil)
+	self.name = nil
+	self.port = nil
+	self.socket = nil
 end
 
 logger:info("SockManager", "SockManager initialized!")

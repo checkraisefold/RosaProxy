@@ -14,6 +14,7 @@ local Logger = {
 
 -- Log levels to compare against to determine what logs to push to console
 local logLevels = {
+	none = 0,
 	error = 1,
 	warn = 2,
 	info = 4,
