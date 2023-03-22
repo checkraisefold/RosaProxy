@@ -5,6 +5,7 @@ local logger = require("../misc/logger")
 ---@field port number
 ---@field name string
 ---@field socket table?
+---@field userData table?
 local ManagedSocket = {}
 
 ---@class SockManager
@@ -16,8 +17,9 @@ local SockManager = {
 ---@param name string
 ---@param port number
 ---@param host string
+---@param userData table?
 ---@param onMsg function?
-function SockManager:create(name, port, host, onMsg)
+function SockManager.create(name, port, host, userData, onMsg)
 	local sockObject = udp.createSocket("udp4")
 	if not sockObject then
 		logger:error("SockManager", "Failed to create UDP socket!", name, port)
@@ -37,24 +39,23 @@ function SockManager:create(name, port, host, onMsg)
 	end
 
 	---@type ManagedSocket
-	local managedSock = {
-		name = name,
-		port = normalizedPort,
-		socket = sockObject,
-	}
-	setmetatable(managedSock, {
+	local self = setmetatable({}, {
 		__index = function(_, k)
-			return rawget(sockObject, k) or rawget(ManagedSocket, k)
+			return rawget(ManagedSocket, k) or rawget(sockObject, k)
 		end,
 	})
-	self._sockets[normalizedPort] = managedSock
+	self.name = name
+	self.port = normalizedPort
+	self.socket = sockObject
+	self.userData = userData
+	SockManager._sockets[normalizedPort] = self
 
 	if onMsg then
 		sockObject:on("message", onMsg)
 	end
 
 	logger:debug("SockManager", "Created UDP socket:", name, normalizedPort)
-	return managedSock
+	return self
 end
 
 ---@param identifier number|string
@@ -70,7 +71,7 @@ function SockManager:get(identifier)
 	end
 end
 
--- This shouldn't be used directly by external code. Use :destroyManaged() on a socket instead.
+-- This shouldn't be used by external code. Use :destroyManaged() on a socket instead.
 ---@param identifier number|string
 ---@param value table?
 function SockManager:internalSet(identifier, value)
@@ -90,7 +91,7 @@ function SockManager:internalSet(identifier, value)
 end
 
 -- Destroys a ManagedSocket.
-function ManagedSocket:destroyManaged()
+function ManagedSocket:destroy()
 	self.socket:close()
 	SockManager:internalSet(self.port, nil)
 	self.name = nil

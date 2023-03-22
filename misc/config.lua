@@ -29,6 +29,7 @@ function Config:set(key, value)
     return false
 end
 
+---@param path string
 function Config:init(path)
     local configFile, fileErr = io.open(path, "r")
     if not configFile then

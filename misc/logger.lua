@@ -12,7 +12,8 @@ local Logger = {
 	_initialized = false,
 }
 
--- Log levels to compare against to determine what logs to push to console
+-- Log levels to determine what's pushed to logs
+---@enum logLevel
 local logLevels = {
 	none = 0,
 	error = 1,
@@ -23,6 +24,7 @@ local logLevels = {
 
 -- Function that does random math to turn text into a Xterm color for use in vterm ANSI sequence
 ---@param text string
+---@return integer
 ---@private
 function Logger:_textToColor(text)
 	if self._colorCache[text] then
@@ -40,8 +42,9 @@ function Logger:_textToColor(text)
 end
 
 -- Internal logging function used by the wrappers
+---@param methodPrefix string
+---@param level logLevel
 ---@param category string
----@param ... string
 ---@private
 function Logger:_log(methodPrefix, level, category, ...)
 	if logLevels[level] > logLevels[self._logLevel] then
@@ -75,7 +78,7 @@ function Logger:error(category, ...)
 		methodPrefix = "Error   | "
 	end
 
-	self:_log(methodPrefix, "error", category, ...)
+	self:_log(methodPrefix, logLevels.error, category, ...)
 end
 
 -- Warning logging wrapper
@@ -88,7 +91,7 @@ function Logger:warn(category, ...)
 		methodPrefix = "Warning | "
 	end
 
-	self:_log(methodPrefix, "warn", category, ...)
+	self:_log(methodPrefix, logLevels.warn, category, ...)
 end
 
 -- Info logging wrapper
@@ -101,7 +104,7 @@ function Logger:info(category, ...)
 		methodPrefix = "Info    | "
 	end
 
-	self:_log(methodPrefix, "info", category, ...)
+	self:_log(methodPrefix, logLevels.info, category, ...)
 end
 
 -- Debug logging wrapper
@@ -114,7 +117,7 @@ function Logger:debug(category, ...)
 		methodPrefix = "Debug   | "
 	end
 
-	self:_log(methodPrefix, "debug", category, ...)
+	self:_log(methodPrefix, logLevels.debug, category, ...)
 end
 
 -- Initializes the members of the Logger class

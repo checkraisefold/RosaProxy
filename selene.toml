@@ -1,0 +1,2 @@
+# Using the Luau selene std because Lua53 std has some bugged signatures.
+std = "luau"
