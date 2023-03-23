@@ -47,7 +47,7 @@ end
 ---@param category string
 ---@private
 function Logger:_log(methodPrefix, level, category, ...)
-	if logLevels[level] > logLevels[self._logLevel] then
+	if level > logLevels[self._logLevel] then
 		return
 	end
 
