@@ -13,6 +13,8 @@ local packets = require("./packets/gameServer")
 ---@field port number
 ---@field socket ManagedSocket?
 ---@field gameServer GameServer
+---@field lastTraffic number
+---@field private _trafficTimer any
 local ClientSocket = {}
 
 ---@class GameServer
@@ -206,6 +208,7 @@ function GameServer.create(targetHost, targetPort, host, port, config, masterSer
 end
 
 function ClientSocket:send(...)
+	self.lastTraffic = os.clock()
 	return self.socket:send(...)
 end
 
@@ -218,7 +221,16 @@ function ClientSocket:onMsg(msg, responseInfo)
 		return
 	end
 
+	self.lastTraffic = os.clock()
 	server.socket:send(msg, self.clientPort, self.clientHost)
+end
+
+function ClientSocket:destroy()
+	self.gameServer.clientSockets[self.clientIdent] = nil
+	self.socket:destroy()
+	self.socket = nil
+	self.gameServer = nil
+	timer.clearInterval(self._trafficTimer)
 end
 
 ---@param clientHost string
@@ -234,9 +246,16 @@ function ClientSocket.create(clientHost, clientPort, gameServer, clientIdent)
 	self.clientIdent = clientIdent
 	self.socket = sockManager.create("ClientSocket", 0, clientConfig.host, nil, ClientSocket.onMsg, self)
 	self.port = self.socket.port
+	self.lastTraffic = os.clock()
 
 	self.gameServer = gameServer
 	self.gameServer.clientSockets[clientIdent] = self
+
+	self._trafficTimer = timer.setInterval((clientConfig.stayAlive + 10) * 1000, function()
+		if os.clock() - self.lastTraffic > clientConfig.stayAlive then
+			self:destroy()
+		end
+	end)
 
 	return self
 end
