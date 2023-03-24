@@ -252,7 +252,7 @@ function ClientSocket.create(clientHost, clientPort, gameServer, clientIdent)
 	self.gameServer.clientSockets[clientIdent] = self
 
 	self._trafficTimer = timer.setInterval((clientConfig.stayAlive + 10) * 1000, function()
-		if os.clock() - self.lastTraffic > clientConfig.stayAlive then
+		if (os.clock() - self.lastTraffic) > clientConfig.stayAlive then
 			logger:debug(
 				"GameServer",
 				"Client socket ran out of stayAlive on port %u. Client was %s:%u.",
