@@ -15,7 +15,7 @@
   "proxyGameServer": {
     "port": 24025,
     "host": "0.0.0.0",
-    "encodeHost": "98.160.225.140",
+    "encodeHost": "1.2.3.4",
     "updateCachedInfoInterval": 500,
     "pingMasterInterval": 14000
   },
