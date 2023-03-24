@@ -2,13 +2,13 @@ local utils = {}
 
 ---@param str string
 ---@param sep string
-function utils.strSplit(str, sep)
+function utils.strSplit(str: string, sep: string)
 	local parts = {}
 	local pos = 0
 	local splitIterator = function()
 		return str:find(sep, pos, true)
 	end
-	for sepStart, sepEnd in splitIterator do
+	for sepStar, sepEnd in splitIterator do
 		table.insert(parts, str:sub(pos, sepStart - 1))
 		pos = sepEnd + 1
 	end
@@ -18,9 +18,9 @@ end
 
 -- Encodes an IP address in little endian.
 ---@param host string
-function utils.encodeHost(host)
+function utils.encodeHost(host: string): string
 	local tempEncode = {}
-	local splitHost = utils.strSplit(host, ".")
+	local splitHost: {string} = utils.strSplit(host, ".")
 
 	local loopIdx = 1
 	for i = #splitHost, 1, -1 do

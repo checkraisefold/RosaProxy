@@ -1,3 +1,12 @@
+
+global enum LogLevel
+	"none"
+	"error"
+	"warn"
+	"info"
+	"debug"
+end
+
 ---@class Logger
 ---@field private _color boolean
 ---@field private _logLevel string
@@ -5,16 +14,18 @@
 ---@field private _colorCache table
 ---@field private _initialized boolean
 local Logger = {
-	_color = true,
-	_logLevel = "debug",
-	_logFile = nil,
-	_colorCache = {},
+	_color: boolean = true,
+	_logLevel: LogLevel = "debug",
+	_logFile: string = nil,
+	_colorCache: {string:integer} = {},
 	_initialized = false,
 }
 
 -- Log levels to determine what's pushed to logs
 ---@enum logLevel
-local logLevels = {
+local logLevels: {
+	LogLevel: integer
+} = {
 	none = 0,
 	error = 1,
 	warn = 2,
@@ -26,7 +37,7 @@ local logLevels = {
 ---@param text string
 ---@return integer
 ---@private
-function Logger:_textToColor(text)
+function Logger:_textToColor(text: string): integer
 	if self._colorCache[text] then
 		return self._colorCache[text]
 	end
@@ -47,7 +58,7 @@ end
 ---@param category string
 ---@param format string
 ---@private
-function Logger:_log(methodPrefix, level, category, format, ...)
+function Logger:_log(methodPrefix: string, level: integer, category: string, format: string, ...): nil
 	if level > logLevels[self._logLevel] then
 		return
 	end
@@ -72,8 +83,8 @@ end
 -- Error logging wrapper
 ---@param category string
 ---@param format string
-function Logger:error(category, format, ...)
-	local methodPrefix = nil
+function Logger:error(category: string, format: string, ...): nil
+	local methodPrefix: string = nil
 	if self._color then
 		methodPrefix = "\27[38;5;196mError\27[0m   | "
 	else
@@ -86,8 +97,8 @@ end
 -- Warning logging wrapper
 ---@param category string
 ---@param format string
-function Logger:warn(category, format, ...)
-	local methodPrefix = nil
+function Logger:warn(category: string, format: string, ...): nil
+	local methodPrefix: string = nil
 	if self._color then
 		methodPrefix = "\27[38;5;208mWarning\27[0m | "
 	else
@@ -100,8 +111,8 @@ end
 -- Info logging wrapper
 ---@param category string
 ---@param format string
-function Logger:info(category, format, ...)
-	local methodPrefix = nil
+function Logger:info(category: string, format: string, ...): nil
+	local methodPrefix: string = nil
 	if self._color then
 		methodPrefix = "\27[38;5;118mInfo\27[0m    | "
 	else
@@ -114,8 +125,8 @@ end
 -- Debug logging wrapper
 ---@param category string
 ---@param format string
-function Logger:debug(category, format, ...)
-	local methodPrefix = nil
+function Logger:debug(category: string, format: string, ...): nil
+	local methodPrefix: string = nil
 	if self._color then
 		methodPrefix = "\27[38;5;45mDebug\27[0m   | "
 	else
@@ -129,7 +140,7 @@ end
 ---@param color boolean?
 ---@param logLevel string?
 ---@param file string?
-function Logger:init(color, logLevel, file)
+function Logger:init(color: boolean, logLevel: LogLevel, file: string): nil
 	if color == false then
 		self._color = false
 	end

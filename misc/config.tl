@@ -2,15 +2,17 @@ local logger = require("./logger")
 local json = require("json")
 local io = require("io")
 
+local 
+
 ---@class Config
 ---@field private _config table
 ---@field private _initialized boolean
 local Config = {
-	_config = {},
+	_config: {string: number | integer | string} = {},
 	_initialized = false,
 }
 
-function Config:get()
+function Config:get():
 	if self._initialized then
 		return self._config
 	end
