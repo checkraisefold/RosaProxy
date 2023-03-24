@@ -253,7 +253,6 @@ function ClientSocket.create(clientHost, clientPort, gameServer, clientIdent)
 	self.gameServer.clientSockets[clientIdent] = self
 
 	self._trafficTimer = timer.setInterval((clientConfig.stayAlive + 10) * 1000, function()
-		print("RAN TIMER", os.time(), self.lastTraffic,(os.time() - self.lastTraffic))
 		if (os.time() - self.lastTraffic) > clientConfig.stayAlive then
 			logger:debug(
 				"GameServer",
