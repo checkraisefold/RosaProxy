@@ -160,8 +160,7 @@ function GameServer:_initSocket()
 	local function updateCachedInfo()
 		local toSend = {}
 		toSend.gameVersion = loadedConfig.gameVersion
-		print(os.clock())
-		toSend.timestamp = (os.clock() * 1000) % ((2 ^ 32) - 1)
+		toSend.timestamp = math.random((2 ^ 32) - 1)
 
 		local encoded = packets.requestServerInfo:encode(toSend)
 		self.socket:send(encoded, self.targetPort, self.targetHost)
