@@ -160,6 +160,7 @@ function GameServer:_initSocket()
 	local function updateCachedInfo()
 		local toSend = {}
 		toSend.gameVersion = loadedConfig.gameVersion
+		print(os.clock())
 		toSend.timestamp = (os.clock() * 1000) % ((2 ^ 32) - 1)
 
 		local encoded = packets.requestServerInfo:encode(toSend)
@@ -208,7 +209,7 @@ function GameServer.create(targetHost, targetPort, host, port, config, masterSer
 end
 
 function ClientSocket:send(...)
-	self.lastTraffic = os.clock()
+	self.lastTraffic = os.time()
 	return self.socket:send(...)
 end
 
@@ -221,7 +222,7 @@ function ClientSocket:onMsg(msg, responseInfo)
 		return
 	end
 
-	self.lastTraffic = os.clock()
+	self.lastTraffic = os.time()
 	server.socket:send(msg, self.clientPort, self.clientHost)
 end
 
@@ -246,14 +247,14 @@ function ClientSocket.create(clientHost, clientPort, gameServer, clientIdent)
 	self.clientIdent = clientIdent
 	self.socket = sockManager.create("ClientSocket", 0, clientConfig.host, nil, ClientSocket.onMsg, self)
 	self.port = self.socket.port
-	self.lastTraffic = os.clock()
+	self.lastTraffic = os.time()
 
 	self.gameServer = gameServer
 	self.gameServer.clientSockets[clientIdent] = self
 
 	self._trafficTimer = timer.setInterval((clientConfig.stayAlive + 10) * 1000, function()
-		print("RAN TIMER", os.clock(), self.lastTraffic,(os.clock() - self.lastTraffic))
-		if (os.clock() - self.lastTraffic) > clientConfig.stayAlive then
+		print("RAN TIMER", os.time(), self.lastTraffic,(os.time() - self.lastTraffic))
+		if (os.time() - self.lastTraffic) > clientConfig.stayAlive then
 			logger:debug(
 				"GameServer",
 				"Client socket ran out of stayAlive on port %u. Client was %s:%u.",
