@@ -1,6 +1,29 @@
 {
-    "logger": {
-        "logLevel": "debug",
-        "logColor": true
-    }
+  "gameVersion": 38,
+  "logger": {
+    "logLevel": "debug",
+    "logColor": true
+  },
+  "targetGameServer": {
+    "port": 24016,
+    "host": "127.0.0.1"
+  },
+  "targetMasterServer": {
+    "port": 27592,
+    "host": "66.226.72.227"
+  },
+  "proxyGameServer": {
+    "port": 24025,
+    "host": "0.0.0.0",
+    "encodeHost": "98.160.225.140",
+    "updateCachedInfoInterval": 500,
+    "pingMasterInterval": 14000
+  },
+  "proxyMasterServer": {
+    "port": 28015,
+    "host": "0.0.0.0"
+  },
+  "clientSockets": {
+    "host": "0.0.0.0"
+  }
 }

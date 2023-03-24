@@ -45,8 +45,9 @@ end
 ---@param methodPrefix string
 ---@param level logLevel
 ---@param category string
+---@param format string
 ---@private
-function Logger:_log(methodPrefix, level, category, ...)
+function Logger:_log(methodPrefix, level, category, format, ...)
 	if level > logLevels[self._logLevel] then
 		return
 	end
@@ -57,12 +58,12 @@ function Logger:_log(methodPrefix, level, category, ...)
 	if self._color then
 		local categoryColor = self:_textToColor(category)
 		local categoryPrefix = "\27[38;5;" .. tostring(categoryColor) .. "m[" .. category .. "]\27[0m "
-		logText = logText .. methodPrefix .. categoryPrefix .. table.concat(argsTable, " ")
+		logText = logText .. methodPrefix .. categoryPrefix .. string.format(format, table.unpack(argsTable))
 
 		print(logText)
 	else
 		local categoryPrefix = "[" .. category .. "] "
-		logText = logText .. methodPrefix .. categoryPrefix .. table.concat(argsTable, " ")
+		logText = logText .. methodPrefix .. categoryPrefix .. string.format(format, table.unpack(argsTable))
 
 		print(logText)
 	end
@@ -70,7 +71,8 @@ end
 
 -- Error logging wrapper
 ---@param category string
-function Logger:error(category, ...)
+---@param format string
+function Logger:error(category, format, ...)
 	local methodPrefix = nil
 	if self._color then
 		methodPrefix = "\27[38;5;196mError\27[0m   | "
@@ -78,12 +80,13 @@ function Logger:error(category, ...)
 		methodPrefix = "Error   | "
 	end
 
-	self:_log(methodPrefix, logLevels.error, category, ...)
+	self:_log(methodPrefix, logLevels.error, category, format, ...)
 end
 
 -- Warning logging wrapper
 ---@param category string
-function Logger:warn(category, ...)
+---@param format string
+function Logger:warn(category, format, ...)
 	local methodPrefix = nil
 	if self._color then
 		methodPrefix = "\27[38;5;208mWarning\27[0m | "
@@ -91,12 +94,13 @@ function Logger:warn(category, ...)
 		methodPrefix = "Warning | "
 	end
 
-	self:_log(methodPrefix, logLevels.warn, category, ...)
+	self:_log(methodPrefix, logLevels.warn, category, format, ...)
 end
 
 -- Info logging wrapper
 ---@param category string
-function Logger:info(category, ...)
+---@param format string
+function Logger:info(category, format, ...)
 	local methodPrefix = nil
 	if self._color then
 		methodPrefix = "\27[38;5;118mInfo\27[0m    | "
@@ -104,12 +108,13 @@ function Logger:info(category, ...)
 		methodPrefix = "Info    | "
 	end
 
-	self:_log(methodPrefix, logLevels.info, category, ...)
+	self:_log(methodPrefix, logLevels.info, category, format, ...)
 end
 
 -- Debug logging wrapper
 ---@param category string
-function Logger:debug(category, ...)
+---@param format string
+function Logger:debug(category, format, ...)
 	local methodPrefix = nil
 	if self._color then
 		methodPrefix = "\27[38;5;45mDebug\27[0m   | "
@@ -117,7 +122,7 @@ function Logger:debug(category, ...)
 		methodPrefix = "Debug   | "
 	end
 
-	self:_log(methodPrefix, logLevels.debug, category, ...)
+	self:_log(methodPrefix, logLevels.debug, category, format, ...)
 end
 
 -- Initializes the members of the Logger class

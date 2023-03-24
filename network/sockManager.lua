@@ -19,7 +19,8 @@ local SockManager = {
 ---@param host string
 ---@param userData table?
 ---@param onMsg function?
-function SockManager.create(name, port, host, userData, onMsg)
+---@param onMsgObj table?
+function SockManager.create(name, port, host, userData, onMsg, onMsgObj)
 	local sockObject = udp.createSocket("udp4")
 	if not sockObject then
 		logger:error("SockManager", "Failed to create UDP socket!", name, port)
@@ -51,10 +52,18 @@ function SockManager.create(name, port, host, userData, onMsg)
 	SockManager._sockets[normalizedPort] = self
 
 	if onMsg then
-		sockObject:on("message", onMsg)
+		-- A wrapper to allow passing objects to a msg function.
+		local function msgWrapper(msg, rInfo, flags)
+			if onMsgObj then
+				onMsg(onMsgObj, msg, rInfo, flags)
+			else
+				onMsg(msg, rInfo, flags)
+			end
+		end
+		sockObject:on("message", msgWrapper)
 	end
 
-	logger:debug("SockManager", "Created UDP socket:", name, normalizedPort)
+	logger:debug("SockManager", "Created UDP socket: %s %u", name, normalizedPort)
 	return self
 end
 
@@ -97,6 +106,10 @@ function ManagedSocket:destroy()
 	self.name = nil
 	self.port = nil
 	self.socket = nil
+end
+
+function ManagedSocket:send(...)
+	self.socket:send(...)
 end
 
 logger:info("SockManager", "SockManager initialized!")

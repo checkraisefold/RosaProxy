@@ -6,8 +6,19 @@ if not config then
 	return
 end
 
--- Module imports
+-- Load the logger
 local logger = require("./misc/logger")
-local sockManager = require("./network/sockManager")
-
 logger:init(config.logger.logColor, config.logger.logLevel)
+
+-- Module imports
+local masterServer = require("./masterServer")
+local gameServer = require("./gameServer")
+require("./packets/gameServer")
+require("./packets/masterServer")
+
+local proxyConfig = config.proxyGameServer
+local targetConfig = config.targetGameServer
+local masterConfig = config.proxyMasterServer
+
+local currMaster = masterServer.create(masterConfig.host, masterConfig.port, config)
+gameServer.create(targetConfig.host, targetConfig.port, proxyConfig.host, proxyConfig.port, config, currMaster)
