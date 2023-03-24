@@ -44,7 +44,12 @@ function GameServer:onMasterMsg(msg, responseInfo)
 	end
 
 	if packet.type == "MasterClientAuth" then
-		logger:debug("GameServer", "Forwarding master server auth to target gameserver")
+		logger:debug(
+			"GameServer",
+			"Forwarding master server auth to target gameserver for %s:%u",
+			responseInfo.ip,
+			responseInfo.port
+		)
 		self.masterServer:send(msg, self.targetPort, self.targetHost)
 	end
 end
@@ -81,7 +86,6 @@ function GameServer:onClientMsg(msg, responseInfo)
 		local toReply = info:sub(1, 6) .. string.pack("I4", decoded.timestamp) .. info:sub(11)
 		self.socket:send(toReply, responseInfo.port, responseInfo.ip)
 	elseif packet.type == "ClientInitConnection" then
-		logger:debug("GameServer", "Client is attempting to connect")
 		local clientSock = self.clientSockets[clientIdent]
 		if clientSock then
 			clientSock:send(msg, self.targetPort, self.targetHost)
@@ -214,7 +218,6 @@ function ClientSocket:onMsg(msg, responseInfo)
 		return
 	end
 
-	logger:debug("GameServer", "Forwarding a message to client %s:%u", self.clientHost, self.clientPort)
 	server.socket:send(msg, self.clientPort, self.clientHost)
 end
 
