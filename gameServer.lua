@@ -109,8 +109,6 @@ function GameServer:onServerMsg(msg, responseInfo)
 	end
 
 	if packet.type == "ServerInfoReply" then
-		-- Unfortunately, because of Alex Austin protocol, I have to do this hacky thing to replace the IP address and port.
-		--local fixedMsg = msg:sub(1, 48) .. self._encodedHost .. string.pack("I2", self.port) .. msg:sub(55)
 		self._cachedTargetInfo = msg
 	end
 end

@@ -15,7 +15,6 @@ local loadedConfig = nil
 ---@param port number
 ---@param host string
 function MasterServer:send(msg, port, host)
-	logger:info("MasterServer", "We are forwarding shit lol")
 	self.socket:send(msg, port, host)
 end
 
@@ -39,7 +38,6 @@ function MasterServer:onMsg(msg, responseInfo)
 		return
 	end
 
-	-- TODO: Check if replying with a different IP and port makes server info packet have different IP and port on client request
 	if packet.type == "MasterServerPing" then
 		local gameConfig = loadedConfig.proxyGameServer
 		local leHost = utils.encodeHost(gameConfig.encodeHost)
