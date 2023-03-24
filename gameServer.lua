@@ -215,7 +215,7 @@ function ClientSocket:onMsg(msg, responseInfo)
 	end
 
 	logger:debug("GameServer", "Forwarding a message to client %s:%u", self.clientHost, self.clientPort)
-	self:send(msg, self.clientPort, self.clientHost)
+	server.socket:send(msg, self.clientPort, self.clientHost)
 end
 
 ---@param clientHost string
