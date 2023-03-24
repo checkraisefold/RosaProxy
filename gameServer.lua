@@ -1,4 +1,4 @@
---local udp = require("dgram")
+local uv = require("uv")
 local timer = require("timer")
 local logger = require("./misc/logger")
 local utils = require("./misc/utils")
@@ -158,9 +158,10 @@ function GameServer:_initSocket()
 	local proxyConfig = loadedConfig.proxyGameServer
 	local masterConfig = loadedConfig.targetMasterServer
 	local function updateCachedInfo()
+		-- os.clock returns wacky results, likely due to timers. Using libuv hrtime instead.
 		local toSend = {}
 		toSend.gameVersion = loadedConfig.gameVersion
-		toSend.timestamp = math.random((2 ^ 32) - 1)
+		toSend.timestamp = (uv.hrtime() / 1000000) % ((2 ^ 32) - 1)
 
 		local encoded = packets.requestServerInfo:encode(toSend)
 		self.socket:send(encoded, self.targetPort, self.targetHost)
