@@ -69,6 +69,7 @@ end
 
 -- Checks if a packet is valid.
 ---@param data string?
+---@return boolean valid
 function PacketManager:valid(data)
 	if (not data) or type(data) ~= "string" then
 		return false
@@ -83,6 +84,17 @@ function PacketManager:valid(data)
 	end
 
 	return true
+end
+
+-- Checks if a packet is valid for use in handlers.
+---@param data string?
+---@return boolean valid
+function PacketManager:handerValid(data)
+	if self:valid(data) then
+		return string.sub(data --[[@as string]], 1, 4) == "7DFP"
+	else
+		return false
+	end
 end
 
 -- Gets an encoded packet's type.

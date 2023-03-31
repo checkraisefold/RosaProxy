@@ -61,7 +61,7 @@ end
 function GameServer:onClientMsg(msg, responseInfo)
 	local packet = packetManager:getPacket("GameServer", packetManager:type(msg))
 	local clientIdent = responseInfo.ip .. ":" .. tostring(responseInfo.port)
-	if (not packet) and self.clientSockets[clientIdent] then
+	if ((not packet) or (not packetManager:handerValid(msg))) and self.clientSockets[clientIdent] then
 		local clientSock = self.clientSockets[clientIdent]
 		clientSock:send(msg, self.targetPort, self.targetHost)
 
@@ -81,6 +81,7 @@ function GameServer:onClientMsg(msg, responseInfo)
 		local success, decoded = packet:decode(msg)
 		if not success then
 			logger:warn("GameServer", "Server info request failed to decode!")
+			return
 		end
 
 		---@type string
